@@ -1,9 +1,19 @@
+import { AppBar } from "@/components/AppBar";
+import { Decor } from "@/components/Decor";
 import { ProfileForm } from "@/components/ProfileForm";
 import { getParticipantContext } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProfilePage() {
-  const { participant } = await getParticipantContext();
-  return <main className="mobile-shell page-pad"><p className="text-sm font-black tracking-widest text-violet">PROFILE</p><h1 className="mt-2 text-4xl font-black">나를 알려주세요.</h1><p className="mb-8 mt-3 leading-6 text-black/55">대화를 시작할 작은 단서만 있으면 충분해요.</p><ProfileForm participant={participant} /></main>;
+export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ new?: string }> }) {
+  const { new: isNew } = await searchParams;
+  const { participant, party } = await getParticipantContext();
+  const fresh = isNew === "1";
+  return (
+    <main className="shell pad-b">
+      <Decor variant="mid" />
+      <AppBar title={fresh ? "프로필 만들기" : "프로필 수정"} backHref={fresh ? undefined : "/home"} />
+      <ProfileForm participant={participant} isNew={fresh} questions={party.profile_questions ?? []} />
+    </main>
+  );
 }

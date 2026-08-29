@@ -20,6 +20,7 @@ export async function createParty(_previous: ActionState, formData: FormData): P
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
   const entryCode = randomBytes(6).toString("base64url").slice(0, 8);
   const hostPinHash = await bcrypt.hash(parsed.data.hostPin, 12);
+  const profileQuestions = formData.getAll("customQuestion").map(String).map((value) => value.trim()).filter(Boolean).slice(0, 5);
   const { data, error } = await getAdminClient()
     .from("parties")
     .insert({
@@ -27,6 +28,7 @@ export async function createParty(_previous: ActionState, formData: FormData): P
       host_message: parsed.data.hostMessage,
       host_pin_hash: hostPinHash,
       entry_code: entryCode,
+      profile_questions: profileQuestions,
     })
     .select("id")
     .single();

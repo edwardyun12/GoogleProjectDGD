@@ -65,3 +65,25 @@
   - `/` → `/enter` 리다이렉트 후 HTTP 200
   - `/host/new` HTTP 200
   - Supabase 조회가 포함된 `/enter?p=connection-check` HTTP 200
+
+### 최종 PRD 반영
+
+- 구현 기준을 `MVP.md`에서 최신 `PRD.md` 최종본으로 전환했다.
+- QR 한 번으로 양쪽 참가자에게 카드가 등록되도록 변경하고, 카드 보유와 QR 교환 이벤트를 분리했다. 이미 카드를 가진 상대와 다시 매칭되어도 재스캔으로 성공 판정할 수 있다.
+- 프로필에 한 줄 소개, 연령대, 객관식+주관식 인상착의, 호스트 커스텀 질문/응답을 추가했다.
+- 사진을 필수 단계로 두고 Supabase Storage 업로드·변경 화면을 추가했다. 사진이 없는 기존 참가자는 핵심 화면 진입 전에 사진 등록으로 이동한다.
+- 매칭 미션은 사진 등록 참가자를 2인조로 구성하고, 홀수일 때 마지막 세 명을 3인조로 구성한다. 3인조에서는 각자 지정된 모든 상대와 QR을 교환해야 성공한다.
+- 일반 미션은 자기 신고, 매칭 미션은 QR 교환 자동 판정으로 분리했다. 깜짝 미션도 종류를 선택할 수 있고 기존 시간표와 동시에 진행한다.
+- 카드 화면을 MBTI 16종별 색·패턴이 다른 사진 그리드로 개편하고, 내 QR 화면에서 상대 카드 등록을 2초 폴링으로 바로 알리도록 했다.
+- 시상 화면을 인맥 카드, 매칭 미션 성공, 일반 미션 성공 순위로 분리했다.
+- 미결 항목은 MVP 구현 기준으로 다음처럼 확정했다: 사진 필수, 과거 교환 상대 재매칭 허용(재스캔 판정), 미션은 연속 진행, 파티 종료 후 카드는 읽기 전용 유지.
+- 코드 검증: `npm run typecheck`, `npm run lint`, `npm run build` 통과.
+- `0003_mvp_expansion.sql`을 Supabase SQL Editor에서 실행했다. 원격 Data API로 신규 컬럼, `card_exchanges`, `mission_match_completions`, 다중 대상 매칭 컬럼, `profile-photos` 버킷을 조회해 정상 반영(`MIGRATION_OK`)을 확인했다.
+- 최종 PRD 구현본을 Vercel Production에 재배포하고 고정 도메인 `https://party-time-dgd.vercel.app`에 연결했다.
+- 프로덕션 스모크 테스트 결과 `/`, `/host/new`, `/enter?p=connection-check`, `/photo`가 모두 정상 응답했다. 비로그인 상태의 `/`와 `/photo`는 의도대로 `/enter`로 이동한다.
+
+### 신규 UI 시안 프로덕션 반영
+
+- `Design.png`를 바탕으로 만든 `mockups/` 시안 대응 UI의 타입 검사, 린트, 프로덕션 빌드 통과를 확인했다.
+- 신규 UI 구현본을 Vercel Production에 재배포하고 고정 도메인 `https://party-time-dgd.vercel.app`을 새 배포본에 연결했다.
+- 재배포 후 `/`, `/host/new`, `/enter?p=connection-check`, `/photo` 스모크 테스트가 모두 HTTP 200으로 완료됐다. 비로그인 보호 경로의 `/enter` 이동도 정상이다.

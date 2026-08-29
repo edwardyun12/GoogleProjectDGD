@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireHost } from "@/actions/party";
-import { advanceParty, finalizeActiveMission } from "@/lib/missions";
+import { advanceParty, finalizeActiveMissions, prepareMatchingMission } from "@/lib/missions";
 import { getAdminClient } from "@/lib/supabase";
 import type { ActionState } from "@/types/database";
 
@@ -11,7 +11,7 @@ const missionRow = z.object({
   id: z.string().uuid().optional(),
   content: z.string().trim().min(1).max(160),
   durationSec: z.number().int().min(30).max(60 * 60),
-  judgeType: z.enum(["self", "auto_cards"]),
+  judgeType: z.enum(["self", "matching"]),
   autoTarget: z.number().int().min(1).max(100).nullable(),
 });
 
@@ -38,7 +38,7 @@ export async function saveMissionSchedule(partyId: string, rows: unknown): Promi
         duration_sec: row.durationSec,
         order_index: orderIndex,
         judge_type: row.judgeType,
-        auto_target: row.judgeType === "auto_cards" ? row.autoTarget : null,
+        auto_target: null,
       })),
     );
     if (error) return { error: "시간표 저장에 실패했습니다." };
@@ -54,6 +54,7 @@ export async function startParty(partyId: string): Promise<ActionState> {
     .from("missions")
     .select("id", { head: true, count: "exact" })
     .eq("party_id", partyId)
+    .eq("kind", "scheduled")
     .eq("status", "pending");
   if (!count) return { error: "시작할 미션을 하나 이상 등록해 주세요." };
   const now = new Date().toISOString();
@@ -70,7 +71,7 @@ export async function startParty(partyId: string): Promise<ActionState> {
 
 export async function endParty(partyId: string): Promise<ActionState> {
   await requireHost(partyId);
-  await finalizeActiveMission(partyId);
+  await finalizeActiveMissions(partyId);
   const { error } = await getAdminClient()
     .from("parties")
     .update({ status: "ended", ended_at: new Date().toISOString() })
@@ -89,13 +90,13 @@ export async function publishSurprise(
   const parsed = z.object({
     content: z.string().trim().min(1, "미션 내용을 입력해 주세요.").max(160),
     duration: z.coerce.number().int().min(1).max(60),
+    judgeType: z.enum(["self", "matching"]),
   }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
 
   const supabase = getAdminClient();
   const { data: party } = await supabase.from("parties").select("status").eq("id", partyId).single();
   if (party?.status !== "running") return { error: "진행 중인 파티에서만 발행할 수 있습니다." };
-  await finalizeActiveMission(partyId);
   const now = new Date();
   const { data: last } = await supabase
     .from("missions")
@@ -104,18 +105,19 @@ export async function publishSurprise(
     .order("order_index", { ascending: false })
     .limit(1)
     .maybeSingle();
-  const { error } = await supabase.from("missions").insert({
+  const { data: mission, error } = await supabase.from("missions").insert({
     party_id: partyId,
     content: parsed.data.content,
     duration_sec: parsed.data.duration * 60,
     order_index: (last?.order_index ?? 0) + 1,
     kind: "surprise",
-    judge_type: "self",
+    judge_type: parsed.data.judgeType,
     status: "active",
     started_at: now.toISOString(),
     ends_at: new Date(now.getTime() + parsed.data.duration * 60_000).toISOString(),
-  });
-  if (error) return { error: "깜짝 미션 발행에 실패했습니다." };
+  }).select("*").single();
+  if (error || !mission) return { error: "깜짝 미션 발행에 실패했습니다." };
+  await prepareMatchingMission(mission);
   revalidatePath(`/host/${partyId}`);
-  return { ok: true, message: `깜짝 미션을 발행했습니다. 시간표가 ${parsed.data.duration}분 뒤로 밀립니다.` };
+  return { ok: true, message: `깜짝 미션을 발행했습니다. 현재 미션과 ${parsed.data.duration}분 동안 함께 진행됩니다.` };
 }

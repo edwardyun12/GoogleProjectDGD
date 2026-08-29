@@ -1,29 +1,93 @@
 import { notFound } from "next/navigation";
+import { AppBar } from "@/components/AppBar";
+import { AwardsBoard, type AwardRow } from "@/components/AwardsBoard";
+import { Decor } from "@/components/Decor";
 import { HostLoginForm } from "@/components/HostLoginForm";
 import { HostNav } from "@/components/HostNav";
+import { PartyThumb } from "@/components/PartyThumb";
+import { publicPhotoUrl } from "@/lib/photos";
 import { hasHostSession } from "@/lib/session";
 import { getAdminClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
+const STATUS_LABEL = { ready: "준비 중", running: "진행 중", ended: "파티 종료" } as const;
+
 export default async function AwardsPage({ params }: { params: Promise<{ partyId: string }> }) {
   const { partyId } = await params;
   const supabase = getAdminClient();
-  const { data: party } = await supabase.from("parties").select("id,name").eq("id", partyId).maybeSingle();
+  const { data: party } = await supabase.from("parties").select("id,name,status,started_at,ended_at").eq("id", partyId).maybeSingle();
   if (!party) notFound();
-  if (!(await hasHostSession(partyId))) return <main className="mobile-shell page-pad"><p className="text-sm font-black text-violet">{party.name}</p><h1 className="mt-2 text-3xl font-black">호스트 인증</h1><HostLoginForm partyId={partyId} /></main>;
+
+  if (!(await hasHostSession(partyId))) {
+    return (
+      <main className="shell pad-b">
+        <AppBar title="호스트 인증" />
+        <div className="pad relative z-10">
+          <p className="text-sm font-bold text-acid">{party.name}</p>
+          <HostLoginForm partyId={partyId} />
+        </div>
+      </main>
+    );
+  }
+
   const [{ data: participants }, { data: cards }, { data: missions }] = await Promise.all([
-    supabase.from("participants").select("id,nickname").eq("party_id", partyId),
+    supabase.from("participants").select("id,nickname,photo_path").eq("party_id", partyId),
     supabase.from("cards").select("scanner_id").eq("party_id", partyId),
-    supabase.from("missions").select("id,mission_results(participant_id,result,source)").eq("party_id", partyId).eq("judge_type", "auto_cards"),
+    supabase.from("missions").select("judge_type,mission_results(participant_id,result)").eq("party_id", partyId),
   ]);
+
   const cardCounts = new Map<string, number>();
   for (const card of cards ?? []) cardCounts.set(card.scanner_id, (cardCounts.get(card.scanner_id) ?? 0) + 1);
-  const successCounts = new Map<string, number>();
-  for (const mission of missions ?? []) for (const result of mission.mission_results ?? []) if (result.result === "success" && result.source === "auto") successCounts.set(result.participant_id, (successCounts.get(result.participant_id) ?? 0) + 1);
-  const base = (participants ?? []).map((person) => ({ ...person, cards: cardCounts.get(person.id) ?? 0, successes: successCounts.get(person.id) ?? 0 }));
-  const cardRanking = [...base].sort((a, b) => b.cards - a.cards || a.nickname.localeCompare(b.nickname));
-  const missionRanking = [...base].sort((a, b) => b.successes - a.successes || b.cards - a.cards);
-  const Ranking = ({ rows, value }: { rows: typeof base; value: "cards" | "successes" }) => <ol className="mt-4 space-y-2">{rows.map((person, index) => <li key={person.id} className="flex items-center rounded-2xl bg-white p-4"><span className={`grid h-9 w-9 place-items-center rounded-full font-black ${index < 3 ? "bg-lime" : "bg-black/5"}`}>{index + 1}</span><span className="ml-3 flex-1 font-black">{person.nickname}</span><span className="text-xl font-black text-violet">{person[value]}</span></li>)}</ol>;
-  return <main className="mobile-shell page-pad"><HostNav partyId={partyId} current="awards" /><p className="text-sm font-black tracking-widest text-violet">AWARDS</p><h1 className="mt-2 text-4xl font-black">오늘의 연결</h1><section className="mt-8"><h2 className="text-2xl font-black">🏆 인맥 카드 순위</h2><Ranking rows={cardRanking} value="cards" /></section><section className="mt-9"><h2 className="text-2xl font-black">⚡ 자동 미션 성공 순위</h2><p className="mt-1 text-sm text-black/50">공정성을 위해 자기 신고 미션은 제외했어요.</p><Ranking rows={missionRanking} value="successes" /></section></main>;
+  const matchingCounts = new Map<string, number>();
+  const generalCounts = new Map<string, number>();
+  for (const mission of missions ?? []) {
+    for (const result of mission.mission_results ?? []) {
+      if (result.result !== "success") continue;
+      const target = mission.judge_type === "matching" ? matchingCounts : generalCounts;
+      target.set(result.participant_id, (target.get(result.participant_id) ?? 0) + 1);
+    }
+  }
+
+  const rows: AwardRow[] = (participants ?? []).map((person) => ({
+    id: person.id,
+    nickname: person.nickname,
+    photoUrl: publicPhotoUrl(person.photo_path),
+    cards: cardCounts.get(person.id) ?? 0,
+    matching: matchingCounts.get(person.id) ?? 0,
+    general: generalCounts.get(person.id) ?? 0,
+  }));
+
+  const minutes = party.started_at && party.ended_at
+    ? Math.max(1, Math.round((new Date(party.ended_at).getTime() - new Date(party.started_at).getTime()) / 60_000))
+    : null;
+
+  return (
+    <main className="shell pad-b">
+      <Decor variant="top" />
+      <AppBar title="파티 결과" />
+      <div className="pad relative z-10">
+        <div className="mb-5 flex items-center gap-3">
+          <PartyThumb name={party.name} />
+          <div className="min-w-0">
+            <p className="truncate text-[19px] font-extrabold tracking-tight">{party.name}</p>
+            <p className="text-sm font-bold">
+              <span className="text-acid">{STATUS_LABEL[party.status as keyof typeof STATUS_LABEL]}</span>
+              {minutes && <span className="text-white/45"> · {minutes}분</span>}
+            </p>
+          </div>
+        </div>
+
+        <AwardsBoard
+          rows={rows}
+          stats={{
+            participants: rows.length,
+            cards: cards?.length ?? 0,
+            matching: [...matchingCounts.values()].reduce((sum, value) => sum + value, 0),
+          }}
+        />
+      </div>
+      <HostNav partyId={partyId} current="awards" />
+    </main>
+  );
 }

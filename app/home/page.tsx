@@ -1,28 +1,71 @@
 import Link from "next/link";
+import { AppBar } from "@/components/AppBar";
 import { BottomNav } from "@/components/BottomNav";
+import { Decor } from "@/components/Decor";
 import { MissionExperience } from "@/components/MissionExperience";
 import { PartyHeader } from "@/components/PartyHeader";
+import { PencilIcon, ShirtIcon } from "@/components/icons";
 import { getParticipantContext } from "@/lib/data";
-import { advanceParty } from "@/lib/missions";
+import { advanceParty, getMissionViews } from "@/lib/missions";
+import { publicPhotoUrl } from "@/lib/photos";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
-  const { saved } = await searchParams;
-  const { participant, party, supabase } = await getParticipantContext();
-  const mission = await advanceParty(party.id);
-  const [{ count: people }, { data: result }, { count: progress }] = await Promise.all([
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ saved?: string; photo?: string }> }) {
+  const { saved, photo } = await searchParams;
+  const { participant, party, supabase } = await getParticipantContext(true);
+  const missions = await advanceParty(party.id);
+  const [{ count: people }, missionViews] = await Promise.all([
     supabase.from("participants").select("id", { head: true, count: "exact" }).eq("party_id", party.id),
-    mission ? supabase.from("mission_results").select("result").eq("mission_id", mission.id).eq("participant_id", participant.id).maybeSingle() : Promise.resolve({ data: null }),
-    mission?.started_at ? supabase.from("cards").select("id", { head: true, count: "exact" }).eq("party_id", party.id).eq("scanner_id", participant.id).gte("created_at", mission.started_at) : Promise.resolve({ count: 0 }),
+    getMissionViews(party.id, participant.id, missions),
   ]);
+  const photoUrl = publicPhotoUrl(participant.photo_path);
+  const notice = saved ? "프로필을 저장했어요." : photo ? "카드 사진을 등록했어요." : null;
+  const appearance = participant.appearance_tags?.length ? participant.appearance_tags.join(" · ") : participant.appearance;
+
   return (
-    <main className="mobile-shell page-pad">
-      {saved && <p className="mb-4 rounded-2xl bg-green-100 p-3 text-sm font-bold text-green-800">프로필을 저장했어요.</p>}
-      <PartyHeader partyId={party.id} message={party.host_message} initialCount={people ?? 0} />
-      <div className="mt-5"><MissionExperience partyId={party.id} initial={{ mission, result: (result?.result as "success" | "fail" | undefined) ?? null, progress: progress ?? 0 }} /></div>
-      <section className="card-panel mt-5"><div className="flex items-start justify-between"><div><p className="text-sm font-bold text-black/45">MY PROFILE</p><h2 className="mt-1 text-3xl font-black">{participant.nickname}</h2></div><Link href="/profile" className="rounded-xl bg-paper px-3 py-2 text-sm font-bold">수정</Link></div><p className="mt-3 font-semibold text-black/60">{[participant.age && `${participant.age}세`, participant.gender, participant.mbti].filter(Boolean).join(" · ") || "프로필을 완성해 주세요"}</p><p className="mt-4 rounded-2xl bg-paper p-4 leading-6">{participant.appearance || "인상착의가 아직 없어요."}</p></section>
-      <Link href="/my_qr" className="btn-lime mt-5 w-full py-5 text-lg">내 QR 바로 보여주기 ▦</Link>
+    <main className="shell pad-b">
+      <Decor variant="top" />
+      <AppBar title="오늘의 파티" />
+      <div className="pad relative z-10">
+        {notice && <p className="mb-4 rounded-xl border border-acid/40 bg-acid/10 px-4 py-3 text-sm font-bold text-acid">{notice}</p>}
+        <div className="pt-4">
+          <PartyHeader partyId={party.id} message={party.host_message} initialCount={people ?? 0} />
+        </div>
+
+        <div className="mt-8">
+          <MissionExperience partyId={party.id} initial={{ missions: missionViews }} />
+        </div>
+
+        <section className="panel mt-4 px-4 py-4">
+          <div className="flex items-center justify-between">
+            <p className="text-[15px] font-bold">내 프로필</p>
+            <Link href="/profile" className="flex items-center gap-1.5 text-sm font-semibold text-white/65">
+              <PencilIcon className="h-4 w-4" />수정
+            </Link>
+          </div>
+          <div className="mt-4 flex items-center gap-4">
+            <span className="grid h-[86px] w-[86px] shrink-0 place-items-center overflow-hidden rounded-full bg-white/10">
+              {photoUrl ? (
+                <img src={photoUrl} alt="내 카드 사진" className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-lg font-extrabold text-white/60">{participant.mbti ?? "ME"}</span>
+              )}
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate text-[26px] font-extrabold tracking-tight">{participant.nickname}</h2>
+              <p className="mt-0.5 text-[15px] font-bold text-khaki">{[participant.age_group, participant.mbti].filter(Boolean).join(" · ")}</p>
+            </div>
+          </div>
+          <div className="hair my-4" />
+          <p className="text-[15px] font-semibold">{participant.bio || "나를 설명하는 한 줄을 추가해 주세요."}</p>
+          <div className="hair my-4" />
+          <p className="flex items-center gap-2.5 text-[15px] font-semibold text-khaki">
+            <ShirtIcon className="h-5 w-5 shrink-0" />
+            {appearance || "인상착의가 아직 없어요."}
+          </p>
+        </section>
+      </div>
       <BottomNav current="/home" />
     </main>
   );

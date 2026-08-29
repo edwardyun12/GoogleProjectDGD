@@ -7,6 +7,7 @@
 1. Supabase 프로젝트를 만들고 SQL Editor에서 아래 파일을 순서대로 실행합니다.
    - `supabase/migrations/0001_init.sql`
    - `supabase/migrations/0002_rls.sql`
+   - `supabase/migrations/0003_mvp_expansion.sql`
 2. `.env.example`을 `.env.local`로 복사한 뒤 실제 값을 입력합니다.
 3. 의존성을 설치하고 개발 서버를 실행합니다.
 

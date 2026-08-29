@@ -14,5 +14,12 @@ export function PartyHeader({ partyId, message, initialCount }: { partyId: strin
     const timer = window.setInterval(refresh, 10_000);
     return () => window.clearInterval(timer);
   }, [partyId]);
-  return <section className="rounded-3xl bg-lime p-5"><p className="font-semibold">{message}</p><p className="mt-2 text-2xl font-black">지금 {count}명이<br />파티에 참여해 있어요</p></section>;
+  return (
+    <section className="relative z-10">
+      <p className="text-[21px] font-extrabold leading-[1.5] tracking-tight">{message}</p>
+      <p className="text-[21px] font-extrabold leading-[1.5] tracking-tight">
+        지금 <span className="text-acid">{count}명</span>이 파티에 참여해 있어요
+      </p>
+    </section>
+  );
 }

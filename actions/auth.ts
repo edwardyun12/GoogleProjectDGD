@@ -26,6 +26,7 @@ export async function signInOrUp(
     password: formData.get("password"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  const mode = formData.get("mode") === "signup" ? "signup" : "login";
 
   const supabase = getAdminClient();
   const { data: party } = await supabase
@@ -39,17 +40,20 @@ export async function signInOrUp(
 
   const { data: existing } = await supabase
     .from("participants")
-    .select("id,password_hash,appearance")
+    .select("id,password_hash,appearance,bio,photo_path")
     .eq("party_id", party.id)
     .eq("nickname", parsed.data.nickname)
     .maybeSingle();
 
   if (existing) {
+    if (mode === "signup") return { error: "이미 사용 중인 이름이에요. 로그인으로 입장해 주세요." };
     const valid = await bcrypt.compare(parsed.data.password, existing.password_hash);
     if (!valid) return { error: "비밀번호가 다릅니다." };
     await setParticipantSession({ participantId: existing.id, partyId: party.id });
-    return { ok: true, next: existing.appearance ? "/home" : "/profile?new=1" };
+    return { ok: true, next: !existing.appearance || !existing.bio ? "/profile?new=1" : existing.photo_path ? "/home" : "/photo" };
   }
+
+  if (mode === "login") return { error: "아직 가입되지 않은 이름이에요. 회원가입으로 시작해 주세요." };
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
   const { data: participant, error } = await supabase
