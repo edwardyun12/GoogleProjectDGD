@@ -1,14 +1,47 @@
 {
-  "name": "googleprojectdgd-judge",
+  "name": "hack-the-beat",
+  "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "description": "9-persona hackathon judge harness (Playwright evidence collection + deterministic scoring aggregation).",
+  "description": "Networking party app with a 9-persona hackathon judge harness.",
   "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "judge:collect": "node .claude/skills/judge/scripts/collect-evidence.mjs",
     "judge:aggregate": "node .claude/skills/judge/scripts/aggregate.mjs",
     "judge:test-aggregate": "node .claude/skills/judge/scripts/aggregate.mjs --scores .claude/skills/judge/fixtures/sample-scores --out judge-reports/_fixture-aggregate.json"
   },
+  "dependencies": {
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.8",
+    "bcryptjs": "^3.0.2",
+    "jose": "^6.0.11",
+    "next": "^15.5.24",
+    "qr-scanner": "^1.4.2",
+    "qrcode": "^1.5.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "server-only": "^0.0.1",
+    "zod": "^3.25.67"
+  },
   "devDependencies": {
-    "playwright": "^1.48.0"
+    "@eslint/eslintrc": "^3.3.1",
+    "@types/node": "^22.15.32",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.29.0",
+    "eslint-config-next": "^15.5.24",
+    "playwright": "^1.48.0",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.26",
+    "sharp": "^0.35.0"
   }
 }
