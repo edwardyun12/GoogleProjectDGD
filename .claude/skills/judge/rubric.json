@@ -1,0 +1,146 @@
+{
+  "scale": {
+    "5": "이 항목만 놓고 보면 이미 시장에 있는 제품 수준. 반례를 못 찾겠다.",
+    "4": "명확히 잘함. 지적할 게 있지만 본질은 아니다.",
+    "3": "기준 충족. 무난하나 기억에 남지 않는다.",
+    "2": "시도는 했으나 근거·구현이 비어 있다.",
+    "1": "언급만 있고 실체가 없다.",
+    "0": "다루지 않았거나 사실과 다르다."
+  },
+  "scoreStep": 0.5,
+  "categories": {
+    "A": {
+      "name": "기획 의도대로 작동",
+      "weight": 0.34,
+      "responsibleGroup": "engineer",
+      "items": {
+        "A1": {
+          "name": "핵심 플로우 완주",
+          "subWeight": 0.40,
+          "finalWeight": 13.6,
+          "definition": "온보딩 → 핵심 액션 → 결과 확인까지 중단·수동 개입 없이 끝나는가."
+        },
+        "A2": {
+          "name": "비교 안정성",
+          "subWeight": 0.20,
+          "finalWeight": 6.8,
+          "definition": "같은 입력을 반복하거나 조건을 바꿔 나란히 놓았을 때 결과가 흔들리지 않는가(재현성·일관성). 원 기준에 정의가 모호했던 항목 — 이 해석으로 고정."
+        },
+        "A3": {
+          "name": "기획 대비 구현 일치도",
+          "subWeight": 0.25,
+          "finalWeight": 8.5,
+          "definition": "발표에서 말한 것 중 실제로 도는 비율. 말한 것 ≠ 데모한 것이면 감점. 비교할 기획/발표 자료가 제시되지 않으면 채점하지 않고 score:0, reason:\"제시되지 않음\"으로 처리한다."
+        },
+        "A4": {
+          "name": "완성도·디테일",
+          "subWeight": 0.15,
+          "finalWeight": 5.1,
+          "definition": "빈 상태, 에러, 로딩, 카피, 마이크로 인터랙션."
+        }
+      }
+    },
+    "B": {
+      "name": "GTM 전략",
+      "weight": 0.33,
+      "responsibleGroup": "founder",
+      "items": {
+        "B1": {
+          "name": "타깃 고객 구체성",
+          "subWeight": 0.25,
+          "finalWeight": 8.25,
+          "definition": "타깃이 인물처럼 구체적으로 그려지는가. 'MZ세대' 식 뭉뚱그림은 레드플래그."
+        },
+        "B2": {
+          "name": "최초 유입 채널 현실성",
+          "subWeight": 0.25,
+          "finalWeight": 8.25,
+          "definition": "첫 유저를 실제로 어디서 데려올지 이름을 댈 수 있는가."
+        },
+        "B3": {
+          "name": "파티형 확산 구조",
+          "subWeight": 0.30,
+          "finalWeight": 9.9,
+          "definition": "혼자 써도 되지만 여럿이 모이면 더 좋아지는 구조가 제품 안에 내장돼 있는가. 초대가 기능의 일부인가, 공유 버튼 하나인가."
+        },
+        "B4": {
+          "name": "리텐션 트리거",
+          "subWeight": 0.20,
+          "finalWeight": 6.6,
+          "definition": "다음에 다시 열 이유가 제품 내부에 있는가(푸시·이벤트·소셜 부채·진행 상태)."
+        }
+      }
+    },
+    "C": {
+      "name": "비즈니스 가능성",
+      "weight": 0.33,
+      "responsibleGroup": "investor",
+      "items": {
+        "C1": {
+          "name": "수익 모델과 지불 의사",
+          "subWeight": 0.30,
+          "finalWeight": 9.9,
+          "definition": "누가, 언제, 얼마를, 왜 지불하는가. 지불 의사는 말이 아니라 행동(사전 결제·대기자·유료 전환)으로 입증돼야 5점에 가까워진다."
+        },
+        "C2": {
+          "name": "시장 규모와 성장 논리",
+          "subWeight": 0.20,
+          "finalWeight": 6.6,
+          "definition": "바텀업 시장 계산과 'Why now'가 있는가."
+        },
+        "C3": {
+          "name": "방어 가능성·차별점",
+          "subWeight": 0.30,
+          "finalWeight": 9.9,
+          "definition": "경쟁사/대기업이 따라 해도 남는 것이 있는가. 권리·파트너십 구조 포함."
+        },
+        "C4": {
+          "name": "단위 경제성·운영 확장성",
+          "subWeight": 0.20,
+          "finalWeight": 6.6,
+          "definition": "유저 1명 증가당 원가가 얼마나 늘어나는가. 원가 → 가격 → 마진이 숫자로 이어지는가."
+        }
+      }
+    }
+  },
+  "grades": [
+    { "min": 85, "grade": "S", "desc": "지금 투자·런칭 논의 가능" },
+    { "min": 70, "grade": "A", "desc": "한 가지 큰 구멍만 메우면 됨" },
+    { "min": 55, "grade": "B", "desc": "방향은 맞으나 증거가 부족" },
+    { "min": 40, "grade": "C", "desc": "아이디어 단계. 검증부터" },
+    { "min": 0,  "grade": "D", "desc": "기준 재정의 필요" }
+  ],
+  "weightedMode": {
+    "factor": 1.5,
+    "responsibleGroupByCategory": { "A": "engineer", "B": "founder", "C": "investor" },
+    "reportBothIfDivergenceAtLeast": 5
+  },
+  "dissent": {
+    "stdDevThreshold": 1.2,
+    "note": "표준편차 ≥ 1.2인 항목은 최고점자와 최저점자의 근거를 리포트에 그대로 남긴다. 평균으로 지우지 않는다."
+  },
+  "disciplineRules": [
+    "본 것만 채점한다. 로드맵·계획은 A 대분류에서 0점 처리하고 B/C에서만 인정한다.",
+    "없는 정보를 상상하지 않는다. 자료에 없으면 score: 0, reason: \"제시되지 않음\"이라고 쓴다.",
+    "페르소나를 연기하되 사실은 왜곡하지 않는다. 성향은 강조점과 질문에만 반영하고, 사실 인용은 자료 그대로.",
+    "자진 신고에는 가산. 팀이 한계를 먼저 밝히면 해당 항목 감점 폭을 최대 0.5 완화한다(전원 적용).",
+    "총평은 3문장. 잘한 것 1 / 가장 큰 구멍 1 / 다음에 할 일 1."
+  ],
+  "outputSchemaExample": {
+    "judge_id": "I2",
+    "judge_name": "오세라",
+    "group": "investor",
+    "scores": [
+      {
+        "code": "B4",
+        "score": 2.5,
+        "confidence": "high",
+        "reason": "리텐션 트리거로 푸시 알림을 언급했으나 데모에 미구현.",
+        "evidence": "발표 4분 12초 / 데모 화면에 알림 설정 없음"
+      }
+    ],
+    "red_flags": ["채널 가정에 CAC 수치 없음"],
+    "killer_question": "…",
+    "one_line_verdict": "…"
+  }
+}

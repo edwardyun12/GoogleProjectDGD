@@ -1,0 +1,22 @@
+{
+  "judge_id": "E2",
+  "judge_name": "이하린",
+  "group": "engineer",
+  "scores": [
+    { "code": "A1", "score": 3.0, "confidence": "med", "reason": "완주는 되나 결과 품질 편차가 있음.", "evidence": "fixture" },
+    { "code": "A2", "score": 1.5, "confidence": "high", "reason": "동일 입력 3회 반복 결과 편차가 크고 팀이 측정한 적이 없음.", "evidence": "fixture" },
+    { "code": "A3", "score": 1.0, "confidence": "med", "reason": "발표한 모델 파이프라인 일부만 실제 동작.", "evidence": "fixture" },
+    { "code": "A4", "score": 2.5, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "B1", "score": 2.5, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "B2", "score": 2.5, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "B3", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "B4", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "C1", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "C2", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "C3", "score": 1.5, "confidence": "high", "reason": "파인튜닝 없는 API 래핑으로 보이며 기술 해자로 보기 어려움.", "evidence": "fixture" },
+    { "code": "C4", "score": 2.0, "confidence": "med", "reason": "판단 보류하되 API 비용 구조상 우려.", "evidence": "fixture" }
+  ],
+  "red_flags": ["평가 지표 부재", "파인튜닝 없는 순수 래퍼를 기술 해자로 주장"],
+  "killer_question": "핵심 가치가 모델에서 나옵니까, 아니면 모델 위에 쌓은 데이터·워크플로우에서 나옵니까?",
+  "one_line_verdict": "재현성을 스스로 측정한 흔적이 없어 신뢰하기 이르다."
+}

@@ -1,0 +1,22 @@
+{
+  "judge_id": "F2",
+  "judge_name": "김도현",
+  "group": "founder",
+  "scores": [
+    { "code": "A1", "score": 3.0, "confidence": "low", "reason": "본 영역 아님.", "evidence": "fixture" },
+    { "code": "A2", "score": 2.5, "confidence": "low", "reason": "본 영역 아님.", "evidence": "fixture" },
+    { "code": "A3", "score": 1.0, "confidence": "med", "reason": "발표 대비 실제 구현 비율이 낮다.", "evidence": "fixture" },
+    { "code": "A4", "score": 2.5, "confidence": "low", "reason": "본 영역 아님.", "evidence": "fixture" },
+    { "code": "B1", "score": 2.5, "confidence": "med", "reason": "타깃이 흐릿함.", "evidence": "fixture" },
+    { "code": "B2", "score": 2.5, "confidence": "med", "reason": "채널이 원론적 수준.", "evidence": "fixture" },
+    { "code": "B3", "score": 1.5, "confidence": "med", "reason": "확산 구조보다 매출 구조가 안 보임.", "evidence": "fixture" },
+    { "code": "B4", "score": 2.0, "confidence": "med", "reason": "리텐션 근거 부족.", "evidence": "fixture" },
+    { "code": "C1", "score": 1.0, "confidence": "high", "reason": "결제한 사람이 없고 원가 계산도 없음.", "evidence": "fixture" },
+    { "code": "C2", "score": 2.0, "confidence": "med", "reason": "시장 논리가 얕음.", "evidence": "fixture" },
+    { "code": "C3", "score": 2.0, "confidence": "med", "reason": "차별점이 기능 나열 수준.", "evidence": "fixture" },
+    { "code": "C4", "score": 1.0, "confidence": "high", "reason": "원가 → 가격 → 마진 연결이 전혀 없음.", "evidence": "fixture" }
+  ],
+  "red_flags": ["원가 계산 부재", "결제 의사 검증 없음"],
+  "killer_question": "이 기능이 유료화되는 순간 유저가 떠난다면, 그건 제품이 아니라 이벤트입니다.",
+  "one_line_verdict": "매출로 이어지는 경로가 아직 숫자가 아니라 말뿐이다."
+}

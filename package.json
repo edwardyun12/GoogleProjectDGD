@@ -1,0 +1,14 @@
+{
+  "name": "googleprojectdgd-judge",
+  "private": true,
+  "type": "module",
+  "description": "9-persona hackathon judge harness (Playwright evidence collection + deterministic scoring aggregation).",
+  "scripts": {
+    "judge:collect": "node .claude/skills/judge/scripts/collect-evidence.mjs",
+    "judge:aggregate": "node .claude/skills/judge/scripts/aggregate.mjs",
+    "judge:test-aggregate": "node .claude/skills/judge/scripts/aggregate.mjs --scores .claude/skills/judge/fixtures/sample-scores --out judge-reports/_fixture-aggregate.json"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

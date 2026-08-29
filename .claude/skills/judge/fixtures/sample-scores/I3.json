@@ -1,0 +1,22 @@
+{
+  "judge_id": "I3",
+  "judge_name": "윤태오",
+  "group": "investor",
+  "scores": [
+    { "code": "A1", "score": 3.0, "confidence": "low", "reason": "초기 단계 감안.", "evidence": "fixture" },
+    { "code": "A2", "score": 2.5, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "A3", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "A4", "score": 2.5, "confidence": "low", "reason": "초기 단계 감안.", "evidence": "fixture" },
+    { "code": "B1", "score": 2.5, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "B2", "score": 2.5, "confidence": "med", "reason": "파트너십 채널 언급 있으나 구체성 낮음.", "evidence": "fixture" },
+    { "code": "B3", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "B4", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "C1", "score": 2.0, "confidence": "med", "reason": "수익 배분 구조 설명 미흡.", "evidence": "fixture" },
+    { "code": "C2", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "C3", "score": 1.0, "confidence": "high", "reason": "저작권/라이선스 처리 경로가 제시되지 않음.", "evidence": "fixture" },
+    { "code": "C4", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" }
+  ],
+  "red_flags": ["저작권/라이선스 미검토", "파트너에게 돌아갈 이익 설명 부재"],
+  "killer_question": "이 서비스가 잘되면, 그때 여러분을 밟고 지나갈 회사는 어디입니까?",
+  "one_line_verdict": "권리 처리 경로부터 막혀 있어 나머지 논의가 아직 이르다."
+}

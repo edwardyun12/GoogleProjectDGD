@@ -1,0 +1,22 @@
+{
+  "judge_id": "I2",
+  "judge_name": "오세라",
+  "group": "investor",
+  "scores": [
+    { "code": "A1", "score": 2.5, "confidence": "low", "reason": "판단 유보하되 엄격 기본값 적용.", "evidence": "fixture" },
+    { "code": "A2", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "A3", "score": 1.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "A4", "score": 2.0, "confidence": "low", "reason": "판단 유보.", "evidence": "fixture" },
+    { "code": "B1", "score": 2.0, "confidence": "med", "reason": "타깃 구체성 부족.", "evidence": "fixture" },
+    { "code": "B2", "score": 1.5, "confidence": "high", "reason": "채널이 인플루언서 마케팅뿐, CAC 수치 없음.", "evidence": "fixture" },
+    { "code": "B3", "score": 1.5, "confidence": "med", "reason": "확산 계수(K) 근거 없음.", "evidence": "fixture" },
+    { "code": "B4", "score": 1.0, "confidence": "high", "reason": "리텐션 목표치 언급 없음.", "evidence": "fixture" },
+    { "code": "C1", "score": 1.5, "confidence": "high", "reason": "지불 의사 근거 없음.", "evidence": "fixture" },
+    { "code": "C2", "score": 1.5, "confidence": "med", "reason": "성장 가정이 전부 낙관 시나리오.", "evidence": "fixture" },
+    { "code": "C3", "score": 1.5, "confidence": "med", "reason": "판단 유보하되 엄격 기본값.", "evidence": "fixture" },
+    { "code": "C4", "score": 1.0, "confidence": "high", "reason": "LTV>CAC를 근거 없이 단언.", "evidence": "fixture" }
+  ],
+  "red_flags": ["인플루언서 마케팅을 유일한 채널로 제시", "리텐션 언급 없음", "LTV > CAC를 근거 없이 단언"],
+  "killer_question": "지금 이 제품의 성장은 유기적입니까, 아니면 여러분이 손으로 밀고 있는 겁니까?",
+  "one_line_verdict": "성장과 리텐션 가정 전체가 아직 지표가 아니라 희망이다."
+}
